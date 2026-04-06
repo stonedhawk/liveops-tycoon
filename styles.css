@@ -1,0 +1,305 @@
+:root {
+    --bg-dark: #121212;
+    --panel-bg: #1e1e24;
+    --border-color: #2c2c35;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0b0;
+    --accent-neon: #00ffcc;
+    --accent-hover: #00cca3;
+    --accent-glow: rgba(0, 255, 204, 0.4);
+    --disabled-bg: #3a3a45;
+    --disabled-text: #6b6b7a;
+    --card-bg: #25252c;
+    --font-main: 'Inter', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    overflow-x: hidden;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 280px 1fr 340px;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1400px;
+    height: 90vh;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto; /* Stack panels vertically */
+        height: auto;
+    }
+}
+
+/* Panels */
+.panel {
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden; /* Important for rounding corners naturally */
+}
+
+header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+}
+
+header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Left Panel - Stats */
+.stat-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.stat-card.primary {
+    border-color: var(--accent-neon);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.text-glow {
+    color: var(--accent-neon);
+    text-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Center Panel - Actions */
+.actions-panel {
+    align-items: center;
+}
+
+.actions-panel header {
+    width: 100%;
+    text-align: center;
+}
+
+.action-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.mega-button {
+    background-color: transparent;
+    border: 2px solid var(--accent-neon);
+    color: var(--accent-neon);
+    font-size: 1.5rem;
+    font-weight: 800;
+    padding: 1.5rem 3rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 0 20px var(--accent-glow);
+    white-space: nowrap;
+}
+
+.mega-button:hover {
+    background-color: var(--accent-neon);
+    color: var(--bg-dark);
+    box-shadow: 0 0 30px var(--accent-glow);
+    transform: scale(1.05);
+}
+
+.mega-button:active {
+    transform: scale(0.95);
+}
+
+/* Right Panel - Upgrades */
+.upgrades-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.upgrades-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+/* Custom Scrollbar for Upgrades List */
+.upgrades-list::-webkit-scrollbar {
+    width: 6px;
+}
+.upgrades-list::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 3px;
+}
+
+.upgrade-item {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: border-color 0.2s;
+}
+
+.upgrade-item:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.upgrade-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.upgrade-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.upgrade-owned {
+    background-color: var(--border-color);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.upgrade-desc {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.btn-buy {
+    background-color: var(--accent-neon);
+    color: var(--bg-dark);
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    width: 100%;
+}
+
+.btn-buy:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+}
+
+.btn-buy:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+/* Spec: Disabled buttons must be clearly grayed out with not-allowed cursor */
+.btn-buy:disabled {
+    background-color: var(--disabled-bg);
+    color: var(--disabled-text);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Notification Toaster */
+.toaster {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--accent-neon);
+    color: var(--bg-dark);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 255, 204, 0.4);
+    z-index: 1000;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.toaster.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+    pointer-events: none;
+}
+
+.toaster button {
+    background: rgba(0,0,0,0.2);
+    border: none;
+    color: var(--bg-dark);
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+/* Signature Watermark */
+.watermark {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 11px;
+    color: #555555;
+    pointer-events: none;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
