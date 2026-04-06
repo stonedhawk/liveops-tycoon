@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveOps Tycoon</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        
+        <!-- Left Panel: Stats -->
+        <aside class="panel stats-panel">
+            <header>
+                <h2>Analytics</h2>
+            </header>
+            <div class="stat-card primary">
+                <span class="stat-label">Revenue</span>
+                <span class="stat-value text-glow" id="stat-revenue">$0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">DAU</span>
+                <span class="stat-value" id="stat-dau">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">ARPDAU</span>
+                <span class="stat-value" id="stat-arpdau">$0.00</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Rev / Sec</span>
+                <span class="stat-value" id="stat-rps">$0/s</span>
+            </div>
+        </aside>
+
+        <!-- Center Panel: Actions -->
+        <main class="panel actions-panel">
+            <header>
+                <h1>LiveOps Control Center</h1>
+                <p class="subtitle">Manage operations and trigger events.</p>
+            </header>
+            <div class="action-center">
+                <!-- Manual Action Button -->
+                <button id="btn-liveops-event" class="mega-button">
+                    <span class="button-icon">⚡</span>
+                    <span class="button-text">Run LiveOps Event</span>
+                </button>
+            </div>
+        </main>
+
+        <!-- Right Panel: Upgrades -->
+        <aside class="panel upgrades-panel">
+            <header>
+                <h2>Marketplace</h2>
+            </header>
+            <div class="upgrades-list" id="upgrades-container">
+                <!-- Dynamically populated by UIManager.js -->
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Notification Toaster -->
+    <div id="offline-toaster" class="toaster hidden">
+        <span id="offline-message"></span>
+        <button id="btn-close-toaster">Got it</button>
+    </div>
+
+    <!-- Signature -->
+    <div class="watermark">Created by Stonedhawk (Rahul)</div>
+
+    <!-- Scripts -->
+    <script src="js/GameData.js"></script>
+    <script src="js/GameEngine.js"></script>
+    <script src="js/UIManager.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
