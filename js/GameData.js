@@ -104,6 +104,43 @@ class GameData {
         this.arpdau = newArpdau;
     }
 
+    // Persistence
+    save() {
+        const payload = {
+            revenue: this.revenue,
+            upgrades: {}
+        };
+        // We only really need to save owned upgrades and revenue. DAU and ARPDAU get recalculated.
+        // And lastSaveTime is managed.
+        for (const key in this.upgrades) {
+            payload.upgrades[key] = this.upgrades[key].owned;
+        }
+        payload.lastSaveTime = Date.now();
+        localStorage.setItem('liveOpsTycoonSave', JSON.stringify(payload));
+    }
+
+    load() {
+        const saved = localStorage.getItem('liveOpsTycoonSave');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                this.revenue = parsed.revenue || 0;
+                this.lastSaveTime = parsed.lastSaveTime || Date.now();
+                
+                if (parsed.upgrades) {
+                    for (const key in parsed.upgrades) {
+                        if (this.upgrades[key]) {
+                            this.upgrades[key].owned = parsed.upgrades[key];
+                        }
+                    }
+                }
+                this.recalculateStats();
+            } catch (e) {
+                console.error("Save file corrupted, starting fresh.");
+            }
+        }
+    }
+
     // Number formatting utility for UI rendering
     static formatNumber(num) {
         if (isNaN(num)) return "0";

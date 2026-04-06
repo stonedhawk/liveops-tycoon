@@ -1,6 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize Model
     const data = new GameData();
+    data.load(); // Load persistence before engine boot
+
+    // Periodically save state
+    setInterval(() => {
+        data.save();
+    }, 10000);
 
     // 2. Initialize View
     const ui = new UIManager(data);
