@@ -47,8 +47,13 @@ class GameEngine {
     gameLoop(currentTime) {
         if (!this.isRunning) return;
 
-        const deltaTime = (currentTime - this.lastFrameTime) / 1000;
+        let deltaTime = (currentTime - this.lastFrameTime) / 1000;
         this.lastFrameTime = currentTime;
+
+        // Defensive cap on deltaTime to avoid float/tick explosions if tab is suspended or minimized
+        if (deltaTime > 1.0) {
+            deltaTime = 1.0;
+        }
 
         this.update(deltaTime);
         this.render();
