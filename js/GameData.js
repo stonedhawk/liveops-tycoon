@@ -1,11 +1,7 @@
 class GameData {
-    constructor() {
-        this.revenue = 0;
-        this.dau = 0;       // Daily Active Users
-        this.arpdau = 0.05; // Base Average Revenue Per DAU per day
-        
-        // Define all initial upgrades and their initial state
-        this.upgrades = {
+    // Static read-only catalog to separate data configuration from game state
+    static get DEFAULT_UPGRADES() {
+        return {
             acquisition1: {
                 id: 'acquisition1',
                 name: 'App Store Optimization',
@@ -61,6 +57,15 @@ class GameData {
                 effectType: 'arpdau'
             }
         };
+    }
+
+    constructor() {
+        this.revenue = 0;
+        this.dau = 0;       // Daily Active Users
+        this.arpdau = 0.05; // Base Average Revenue Per DAU per day
+        
+        // Deep copy static upgrades definition for instance isolated state
+        this.upgrades = JSON.parse(JSON.stringify(GameData.DEFAULT_UPGRADES));
 
         this.lastSaveTime = Date.now();
         this.recalculateStats();
@@ -70,15 +75,19 @@ class GameData {
     getUpgradeCost(upgradeId) {
         const upgrade = this.upgrades[upgradeId];
         if (!upgrade) return Infinity;
-        return Math.floor(upgrade.baseCost * Math.pow(1.15, upgrade.owned));
+        
+        const cost = upgrade.baseCost * Math.pow(1.15, upgrade.owned);
+        return isFinite(cost) ? Math.floor(cost) : Infinity;
     }
 
     // Helper to process buying an upgrade
     buyUpgrade(upgradeId) {
+        const upgrade = this.upgrades[upgradeId];
+        if (!upgrade) return false; // Defensive protection against invalid IDs
+
         const cost = this.getUpgradeCost(upgradeId);
         if (this.revenue >= cost) {
             this.revenue -= cost;
-            const upgrade = this.upgrades[upgradeId];
             upgrade.owned += 1;
             
             this.recalculateStats();
@@ -112,7 +121,6 @@ class GameData {
             upgrades: {}
         };
         // We only really need to save owned upgrades and revenue. DAU and ARPDAU get recalculated.
-        // And lastSaveTime is managed.
         for (const key in this.upgrades) {
             payload.upgrades[key] = this.upgrades[key].owned;
         }
@@ -125,13 +133,13 @@ class GameData {
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                this.revenue = parsed.revenue || 0;
-                this.lastSaveTime = parsed.lastSaveTime || Date.now();
+                this.revenue = typeof parsed.revenue === 'number' ? parsed.revenue : 0;
+                this.lastSaveTime = typeof parsed.lastSaveTime === 'number' ? parsed.lastSaveTime : Date.now();
                 
                 if (parsed.upgrades) {
                     for (const key in parsed.upgrades) {
                         if (this.upgrades[key]) {
-                            this.upgrades[key].owned = parsed.upgrades[key];
+                            this.upgrades[key].owned = Number(parsed.upgrades[key]) || 0;
                         }
                     }
                 }
@@ -144,11 +152,13 @@ class GameData {
 
     // Number formatting utility for UI rendering
     static formatNumber(num) {
-        if (isNaN(num)) return "0";
+        if (isNaN(num) || num === null) return "0";
+        if (num <= 0) return "0";
         if (num < 1000) return Number.isInteger(num) ? num.toString() : num.toFixed(2);
         
         const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi"];
         const magnitude = Math.min(Math.floor(Math.log10(num) / 3), suffixes.length - 1);
+        if (magnitude < 0) return num.toFixed(2);
         const scaled = num / Math.pow(1000, magnitude);
         
         return parseFloat(scaled.toFixed(2)) + suffixes[magnitude];
