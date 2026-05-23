@@ -63,6 +63,7 @@ class GameData {
         };
 
         this.lastSaveTime = Date.now();
+        this.recalculateStats();
     }
 
     // Math & Scaling: Upgrades follow exponential cost scaling: Cost = BaseCost * (1.15 ^ Owned)
@@ -147,7 +148,7 @@ class GameData {
         if (num < 1000) return Number.isInteger(num) ? num.toString() : num.toFixed(2);
         
         const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi"];
-        const magnitude = Math.floor(Math.log10(num) / 3);
+        const magnitude = Math.min(Math.floor(Math.log10(num) / 3), suffixes.length - 1);
         const scaled = num / Math.pow(1000, magnitude);
         
         return parseFloat(scaled.toFixed(2)) + suffixes[magnitude];

@@ -18,6 +18,15 @@ class UIManager {
             this.toaster.classList.add('hidden');
         });
 
+        // Initialize DOM update cache to optimize rendering performance
+        this.cache = {
+            revenue: '',
+            dau: '',
+            arpdau: '',
+            rps: '',
+            upgrades: {}
+        };
+
         // Initialize UI fragments
         this.initUpgradesUI(gameData);
     }
@@ -49,35 +58,76 @@ class UIManager {
 
     // Called every frame by the GameEngine
     updateDashboard(gameData) {
-        // 1. Update Stats Left Panel
-        this.elRevenue.innerText = `$${GameData.formatNumber(gameData.revenue)}`;
-        this.elDau.innerText = GameData.formatNumber(gameData.dau);
-        this.elArpdau.innerText = `$${gameData.arpdau.toFixed(2)}`;
+        // 1. Update Stats Left Panel with cache checks
+        const currentRevenue = `$${GameData.formatNumber(gameData.revenue)}`;
+        if (this.cache.revenue !== currentRevenue) {
+            this.elRevenue.innerText = currentRevenue;
+            this.cache.revenue = currentRevenue;
+        }
+
+        const currentDau = GameData.formatNumber(gameData.dau);
+        if (this.cache.dau !== currentDau) {
+            this.elDau.innerText = currentDau;
+            this.cache.dau = currentDau;
+        }
+
+        const currentArpdau = `$${gameData.arpdau.toFixed(2)}`;
+        if (this.cache.arpdau !== currentArpdau) {
+            this.elArpdau.innerText = currentArpdau;
+            this.cache.arpdau = currentArpdau;
+        }
         
         // Rev/Sec = DAU * ARPDAU
-        const rps = gameData.dau * gameData.arpdau;
-        this.elRps.innerText = `$${GameData.formatNumber(rps)}/s`;
+        const rpsVal = gameData.dau * gameData.arpdau;
+        const currentRps = `$${GameData.formatNumber(rpsVal)}/s`;
+        if (this.cache.rps !== currentRps) {
+            this.elRps.innerText = currentRps;
+            this.cache.rps = currentRps;
+        }
 
-        // 2. Update Upgrades Right Panel dynamically
+        // 2. Update Upgrades Right Panel dynamically with cache checks
         for (const key in gameData.upgrades) {
             const upg = gameData.upgrades[key];
             const cost = gameData.getUpgradeCost(upg.id);
+            
+            // Initialize cache for this upgrade if not present
+            if (!this.cache.upgrades[upg.id]) {
+                this.cache.upgrades[upg.id] = {
+                    cost: '',
+                    owned: '',
+                    disabled: null
+                };
+            }
+            
+            const upgradeCache = this.cache.upgrades[upg.id];
             const btn = document.getElementById(`upg-btn-${upg.id}`);
             
             if (btn) {
                 // Update cost text dynamically in case costs scale
-                const costSpan = document.getElementById(`upg-cost-${upg.id}`);
-                if (costSpan) costSpan.innerText = GameData.formatNumber(cost);
+                const currentCost = GameData.formatNumber(cost);
+                if (upgradeCache.cost !== currentCost) {
+                    const costSpan = document.getElementById(`upg-cost-${upg.id}`);
+                    if (costSpan) costSpan.innerText = currentCost;
+                    upgradeCache.cost = currentCost;
+                }
                 
                 // Update owned count dynamically
-                const ownedSpan = document.getElementById(`upg-owned-${upg.id}`);
-                if (ownedSpan) ownedSpan.innerText = `Owned: ${upg.owned}`;
+                const currentOwned = `Owned: ${upg.owned}`;
+                if (upgradeCache.owned !== currentOwned) {
+                    const ownedSpan = document.getElementById(`upg-owned-${upg.id}`);
+                    if (ownedSpan) ownedSpan.innerText = currentOwned;
+                    upgradeCache.owned = currentOwned;
+                }
                 
                 // Toggle accessibility state based on available funds
-                if (gameData.revenue < cost) {
-                    btn.setAttribute('disabled', 'true');
-                } else {
-                    btn.removeAttribute('disabled');
+                const isDisabled = gameData.revenue < cost;
+                if (upgradeCache.disabled !== isDisabled) {
+                    if (isDisabled) {
+                        btn.setAttribute('disabled', 'true');
+                    } else {
+                        btn.removeAttribute('disabled');
+                    }
+                    upgradeCache.disabled = isDisabled;
                 }
             }
         }
